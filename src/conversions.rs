@@ -1,3 +1,4 @@
+// Safer than transmute, doesn't rely on architecture endianness
 macro_rules! bytes_to_i32 {
   ( $x:expr ) => {
     {

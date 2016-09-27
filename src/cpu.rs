@@ -4,10 +4,10 @@ pub struct RookVM {
   pub esp: u32,
   pub ebp: u32,
   pub running: bool,
+  pub code: [u8; 4098],
 
   stack: [u8; 4098],
   heap: [u8; 4098],
-  code: [u8; 4098],
   opcodes: [Option<fn(&mut RookVM)>; 512],
 }
 
@@ -25,6 +25,10 @@ impl RookVM {
       code: [0; 4098],
       opcodes: [None; 512],
     }
+  }
+
+  pub fn add_opcode(&mut self, code: u8, func: fn(&mut RookVM)) {
+    self.opcodes[code as usize] = Some(func);
   }
 
   pub fn read_byte(&mut self) -> u8 {
@@ -84,6 +88,16 @@ impl RookVM {
       &mut self.esp
     } else {
       &mut self.ebp
+    }
+  }
+
+  pub fn nibble_to_register_value(&self, nibble: u8) -> u32 {
+    if nibble < 14 {
+      self.registers[nibble as usize]
+    } else if nibble == 14 {
+      self.esp
+    } else {
+      self.ebp
     }
   }
 }
