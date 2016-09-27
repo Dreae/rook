@@ -1,8 +1,8 @@
-mod cpu;
-mod opcodes;
-
 #[macro_use]
 mod conversions;
+
+mod cpu;
+mod opcodes;
 
 use std::mem;
 
@@ -14,7 +14,7 @@ fn main() {
     c.registers[0] = mem::transmute::<f32, u32>(32.0);
     c.registers[1] = mem::transmute::<f32, u32>(32.0);
   }
-  
+
   c.code[0] = 5u8;
   c.code[1] = 1u8;
   c.run();

@@ -6,7 +6,7 @@ pub struct OpCode {
   pub func: fn(&mut RookVM),
 }
 
-static OP_CODES: [OpCode; 6] = [
+static OP_CODES: [OpCode; 8] = [
   OpCode {
     code: 0x00,
     func: op_exit,
@@ -30,6 +30,14 @@ static OP_CODES: [OpCode; 6] = [
   OpCode {
     code: 0x06,
     func: op_subf,
+  },
+  OpCode {
+    code: 0x20,
+    func: op_call,
+  },
+  OpCode {
+    code: 0x21,
+    func: op_ret,
   }
 ];
 
@@ -79,6 +87,22 @@ fn op_subf(vm: &mut RookVM) {
 
     *dst = *dst - src; 
   }
+}
+
+fn op_call(vm: &mut RookVM) {
+  let addr = bytes_to_i32!(vm.read_bytes(4));
+  let bytes = i32_to_bytes!(vm.eip);
+  vm.push_bytes(&bytes);
+  vm.eip = addr as u32;
+}
+
+fn op_ret(vm: &mut RookVM) {
+  let mut addr: i32;
+  {
+    let bytes = vm.pop_bytes(4);
+    addr = bytes_to_i32!(bytes);
+  }
+  vm.eip = addr as u32;
 }
 
 pub fn register_opcodes(vm: &mut RookVM) {
