@@ -1,0 +1,6 @@
+[package]
+name = "rook"
+version = "0.1.0"
+authors = ["Dreae <dreae@dreae.onl>"]
+
+[dependencies]
