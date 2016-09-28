@@ -59,7 +59,7 @@ macro_rules! bin_op {
   };
 }
 
-static OP_CODES: [OpCode; 21] = [
+static OP_CODES: [OpCode; 24] = [
   OpCode {
     code: 0x00,
     func: op_exit,
@@ -67,6 +67,10 @@ static OP_CODES: [OpCode; 21] = [
   OpCode {
     code: 0x01,
     func: op_mov,
+  },
+  OpCode {
+    code: 0x02,
+    func: op_mov_const,
   },
   OpCode {
     code: 0x03,
@@ -137,6 +141,14 @@ static OP_CODES: [OpCode; 21] = [
     func: op_powf,
   },
   OpCode {
+    code: 0x19,
+    func: op_push,
+  },
+  OpCode {
+    code: 0x1a,
+    func: op_pop,
+  },
+  OpCode {
     code: 0x20,
     func: op_call,
   },
@@ -158,6 +170,14 @@ fn op_mov(vm: &mut RookVM) {
   *dst = src;
 }
 
+fn op_mov_const(vm: &mut RookVM) {
+  let arg = vm.read_byte();
+  let value = bytes_to_u64!(vm.read_bytes(8));
+  let dst = vm.nibble_to_register(arg & 0x0f);
+  *dst = value
+}
+
+
 math_op!(op_add, add, i64);
 math_op!(op_sub, sub, i64);
 math_op!(op_mul, mul, i64);
@@ -177,6 +197,19 @@ bin_op!(op_or, bitor);
 bin_op!(op_xor, bitxor);
 bin_op!(op_shl, shl);
 bin_op!(op_shr, shr);
+
+fn op_push(vm: &mut RookVM) {
+  let arg = vm.read_byte();
+  let src = vm.nibble_to_register_value(arg & 0x0f);
+  vm.push_bytes(&u64_to_bytes!(src));
+}
+
+fn op_pop(vm: &mut RookVM) {
+  let arg = vm.read_byte();
+  let value = bytes_to_u64!(vm.pop_bytes(8));
+  let dst = vm.nibble_to_register(arg & 0x0f);
+  *dst = value
+} 
 
 fn op_call(vm: &mut RookVM) {
   let addr = bytes_to_u64!(vm.read_bytes(8));
