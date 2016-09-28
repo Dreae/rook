@@ -1,8 +1,8 @@
 pub struct RookVM {
-  pub registers: [u32; 15],
-  pub eip: u32,
-  pub esp: u32,
-  pub ebp: u32,
+  pub registers: [u64; 15],
+  pub eip: u64,
+  pub esp: u64,
+  pub ebp: u64,
   pub running: bool,
   pub code: [u8; 4098],
 
@@ -61,14 +61,14 @@ impl RookVM {
     }
   }
 
-  pub fn read_bytes(&mut self, num: u32) -> &[u8] {
+  pub fn read_bytes(&mut self, num: u64) -> &[u8] {
     let slice = &self.code[self.eip as usize .. (self.eip + num) as usize];
     self.eip += num;
 
     slice
   } 
 
-  pub fn pop_bytes(&mut self, num: u32) -> &[u8] {
+  pub fn pop_bytes(&mut self, num: u64) -> &[u8] {
     let slice = &self.stack[(self.ebp + (self.esp - num)) as usize .. (self.ebp + self.esp) as usize];
     self.esp -= num;
 
@@ -81,7 +81,7 @@ impl RookVM {
     }
   }
 
-  pub fn nibble_to_register(&mut self, nibble: u8) -> &mut u32 {
+  pub fn nibble_to_register(&mut self, nibble: u8) -> &mut u64 {
     if nibble < 14 {
       &mut self.registers[nibble as usize]
     } else if nibble == 14 {
@@ -91,7 +91,7 @@ impl RookVM {
     }
   }
 
-  pub fn nibble_to_register_value(&self, nibble: u8) -> u32 {
+  pub fn nibble_to_register_value(&self, nibble: u8) -> u64 {
     if nibble < 14 {
       self.registers[nibble as usize]
     } else if nibble == 14 {
