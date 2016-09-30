@@ -1,12 +1,21 @@
+extern crate rustc_serialize;
+
 #[macro_use]
 mod conversions;
 
 mod cpu;
 mod opcodes;
 
+mod libcompile;
+
 use std::mem;
+use libcompile::parser::Parser;
 
 fn main() {
+  let source = String::from("let x = 1;");
+  let mut parser = Parser::new(&source);
+  parser.parse();
+
   let mut c = cpu::RookVM::new();
   opcodes::register_opcodes(&mut c);
 
