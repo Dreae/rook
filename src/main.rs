@@ -12,7 +12,7 @@ use std::mem;
 use libcompile::parser::Parser;
 
 fn main() {
-  let source = String::from("let x = 1;");
+  let source = String::from("let x = 247;");
   let mut parser = Parser::new(&source);
   parser.parse();
 

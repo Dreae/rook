@@ -18,10 +18,10 @@ impl <'a> Parser<'a> {
   }
 
   pub fn parse(&mut self) {
-    let mut token = self.lexer.next_token(self.current_token);
+    let mut token = self.lexer.next_token();
     while token != Token::EoF {
       println!("Got token {:?}", token);
-      token = self.lexer.next_token(token);
+      token = self.lexer.next_token();
     }
   }
 }

@@ -26,7 +26,7 @@ pub enum DelimToken {
 
 #[derive(Clone, RustcEncodable, PartialEq, Eq, Hash, Debug, Copy)]
 pub enum Lit {
-  Integer(ast::Name),
+  Integer(i64),
 }
 
 #[derive(Clone, RustcEncodable, PartialEq, Eq, Hash, Debug, Copy)]
@@ -59,7 +59,7 @@ fn is_name(digit: char) -> bool {
 }
 
 impl <'a> Lexer<'a> {
-  pub fn new(source: &'a String) -> Lexer<'a> {
+  pub fn new(source: &'a String) -> Self {
     Lexer {
       source: source.chars().peekable(),
     }
@@ -73,7 +73,7 @@ impl <'a> Lexer<'a> {
     self.source.next()
   }
 
-  pub fn next_token(&mut self, current: Token) -> Token {
+  pub fn next_token(&mut self) -> Token {
     let c = self.next_char();
     match c {
       Some('[') => Token::OpenDelim(DelimToken::Bracket),
@@ -92,7 +92,7 @@ impl <'a> Lexer<'a> {
         }
       },
       Some(';') => Token::Semicolon,
-      Some(' ') | Some('\t') | Some('\n') => Token::Whitespace,
+      Some(' ') | Some('\t') | Some('\n') => self.next_token(),
       Some(x) => {
         if x.is_digit(10) {
           self.read_num_lit(x)
@@ -127,6 +127,6 @@ impl <'a> Lexer<'a> {
       num.push(self.next_char().unwrap());
     }
 
-    Token::Literal(Lit::Integer(ast::Name(1)))
+    Token::Literal(Lit::Integer(num.parse::<i64>().unwrap()))
   }
 }
